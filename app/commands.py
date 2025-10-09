@@ -32,9 +32,6 @@ class CommandsBot(ABC):
     async def author(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
-    #@abstractmethod
-    #async def handle_text(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-       # pass
 
 class CommandsMyBot(CommandsBot):
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
