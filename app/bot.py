@@ -2,10 +2,10 @@ from telegram import Update
 from telegram.ext import Application, ApplicationBuilder, CommandHandler, ContextTypes, filters, MessageHandler
 from commands import CommandsMyBot
 from dotenv import load_dotenv
-import logging
 import os
+from loggers_commands import *
 from pc_commands import PcCommandsBot
-from pydantic import BaseModel
+
 
 # Загрузка переменных окружения
 load_dotenv()
@@ -14,31 +14,19 @@ TOKEN_MY_BOT = os.getenv("TOKEN_MY_BOT")
 if not TOKEN_MY_BOT:
     raise ValueError("Токен бота не найден")
 
-logging.basicConfig(
-    filename = 'result_work_bot.log',
-    filemode='a',
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    encoding='utf-8'
-)
-
-class Config(BaseModel):
-    token: str
-    admin_id: int = 0
-
 
 
 async def unknown_team(update: Update, context: ContextTypes.DEFAULT_TYPE):
     command = update.message.text
     await update.message.reply_text(f"Команда '{command}' не найдена")
-    logging.info(f'Пользователь ввел неизвестную команду: {command}')
+    error_logger.error(f'Пользователь ввел неизвестную команду: {command}')
 
 
 async def command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         pass
     except Exception as error:
-        logging.error(f'error in: {error}')
+        error_logger.error(f'error in: {error}')
         await update.message.reply_text("Произошла ошибка")
 
 
@@ -48,7 +36,7 @@ def main():
     bot_app = Application.builder().token(TOKEN_MY_BOT).build()
 
     print('Начало запуска скрипта')
-    logging.debug('Начало запуска бота')
+    debug_logger.debug('Начало запуска бота')
 
     list_commands = [
         CommandHandler('start', bot_commands.start),
@@ -62,7 +50,10 @@ def main():
     list_pc_commands = [
         CommandHandler('system_info', pc_commands_bot.system_info),
         CommandHandler('processor_info', pc_commands_bot.processor_info),
-        CommandHandler('disk', pc_commands_bot.disk)
+        CommandHandler('disk', pc_commands_bot.disk),
+        CommandHandler('users_system', pc_commands_bot.users_system),
+        CommandHandler('access_memory', pc_commands_bot.access_memory),
+        CommandHandler('time_start_system', pc_commands_bot.time_start_system)
     ]
 
     all_commands = list_commands + list_pc_commands
@@ -70,13 +61,15 @@ def main():
     for command in all_commands:
         try:
             bot_app.add_handler(command)
-            logging.info(f'Команда {command} - успешно добавлена!')
+            result_logger.info(f'Команда {command} - успешно добавлена!\n')
         except Exception as error:
-            logging.error(f"Ошибка с: {error}")
-
+            error_logger.error(f"Ошибка с: {error}")
+            
+    debug_logger.debug('Добавлен обраточик неизвестных команд')
     bot_app.add_handler(MessageHandler(filters.COMMAND, unknown_team))
     print('Добавлен обработчик неизвестных команд')
-
+    debug_logger.debug('Бот запустился\n')
+    result_logger.info("Бот успешно запустился")
     print('Ботяра запускается.....')
     bot_app.run_polling()
 
