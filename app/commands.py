@@ -1,10 +1,9 @@
 import asyncio
 from abc import ABC, abstractmethod
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import Update
 from telegram.ext import ContextTypes
 import time
 from datetime import datetime
-from pc_commands import *
 
 
 class CommandsBot(ABC):
@@ -38,29 +37,29 @@ class CommandsMyBot(CommandsBot):
         await update.message.reply_text("Приветствую вас!\nЯ ваш персональный ассистент для оптимизации вашего пк, осуществления управления им с вашего разрешения")
 
     async def help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        commands_text = """
-<b>Доступные команды:</b>
+        await update.message.reply_text( """
+Доступные команды:
 /start - Начало работы с ботом
-/available_commands - выводит все доступные команды
+/help - выводит все доступные команды
 /greeting - приветствие с юзером
 /info - предоставляет информацию об этом боте
 /day_time - выводит время, дату и день недели
 /author - автор и создатель
+=====Системные команды=====
+/system_info - выводит ос систему пк и его архитектуру
+/procerror_info - предоставляет большую часть информации об вашем процессоре вашего пк
+/disk - эта команда показывает всё об вашем диске:
+файловую систему, опции, количество свободного места ни диске, также и занятого пространства
+/users_system - показывает ник текущего юзера в компьютере
+/access_memory - выводит важную информацию об оперативной памяти
+/time_start_system - предоставляет время запуска вашего компа""")
 
-<b>Кнопки для удобного взаимодействия с ботом:</b>
-1. Команды - этот список
-2. Инфа - о боте
-3. Время - текущее время дата, день недели и год
-4. Автор - об авторе
-
-"""
     async def greeting(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        user_id = int(context.args[0])
-        user = await context.bot.get_chat(user_id)
-        if user:
-            await update.message.reply_text(f"Приветствую вас {user}")
+        user_id = update.effective_user
+        if user_id:
+            await update.message.reply_text(f"Приветствую вас {user_id.first_name}! Твой ID: {user_id}")
         else:
-            return 'Юзера с таким id нет'
+            await update.message.reply_text('Не удалось получить информацию о пользователя')
 
     async def info(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         info_bot = """Это мой первый тг бот для управления и оптимизации пк.
@@ -75,9 +74,8 @@ class CommandsMyBot(CommandsBot):
         await update.message.reply_text(f'Сегодняшняя дата и время: {format_time}')
 
     async def author(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        INFO_ABOUT_AUTHOR = """Информация об авторе
+        await update.message.reply_text("""Информация об авторе
 фрик который решился на реализацию данного проекта зовут Саша(Shurik)
 Да это я), мне 18 лет я начинающий пайтон разработчик.
 это мой личный индивидуальный проект по созданию тг ботика для минимизации  затрат моего времени на оптимизацию пк, его процесс компонентов и тому подобных манипуляций
-"""
-        await update.message.reply_text(INFO_ABOUT_AUTHOR)
+""")
