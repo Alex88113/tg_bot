@@ -46,13 +46,17 @@ class PcCommandsBot(PcCommands):
          await update.message.reply_text('-' * 80)
     async def disk(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         partitions = psutil.disk_partitions(all=False)
+        message_text =  'Информация о дисках:\n\n'
         for partition in partitions:
             try:
                 usage = psutil.disk_usage(partition.mountpoint)
-                await update.message.reply_text(f"\nФайловая система: {partition.fstype}\nОпции: {partition.opts}\nВсего: {usage.total // (1024**3)} GB\nИспользовано: {usage.used // (1024 ** 3)} gb ({usage.percent}%\nСвободно: {usage.free // (1024 ** 3)}  gb")
+                message_text += f"{partition.mountpoint} ({partition.fstype}\n"
+                message_text += f"Всего: {usage.total // (1024 ** 3)} gb\n"
+                message_text += f"Использовано: {usage.used // (1024 ** 3)} gb ({usage.percent}%\n"
+                message_text += f"Свободно: {usage.free // (1024 ** 3)} gb\n\n "
             except Exception as error:
-                return f"error in: {error}"
-        return None
+                message_textf"Ошибка для {partition_mountpoint}: {error}\n\n"
+        await update.message.reply_text(message_text)
 
     async def users_system(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         users = psutil.users()
