@@ -1,4 +1,4 @@
-name: Auto Deploy to Ubuntu
+name: Auto Deploy
 
 on:
   push:
@@ -8,12 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: shurik
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/shurik/tg_bot
-          /home/shurik/deploy.sh
+    - name: Trigger deploy via webhook
+      run: |
+        curl -X POST http://91.215.250.220:5000/deploy
