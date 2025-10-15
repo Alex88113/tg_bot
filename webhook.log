@@ -1,0 +1,26 @@
+nohup: ignoring input
+ * Serving Flask app 'webhook_server'
+ * Debug mode: off
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.191.160:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:root:🚀 Запуск деплоя...
+INFO:root:✅ Деплой завершён: === ДЕПЛОЙ ЗАПУЩЕН ===
+shurik
+/home/shurik/tg_bot
+-rwxr-xr-x 1 shurik shurik 600 Oct 15 16:22 /home/shurik/deploy.sh
+[2025-10-15 18:04:56] Начинаем обновление...
+HEAD is now at 9a7bf82 Тест: финальная проверка после настройки SSH
+[2025-10-15 18:04:56] Проект успешно обновлен
+Перезапускаем бота...
+[2025-10-15 18:04:56] Бот перезапущен
+=== ДЕПЛОЙ ЗАВЕРШЁН ===
+
+ERROR:root:Ошибки: From github.com:Alex88113/tg_bot
+ * [new branch]      fix-branch   -> origin/fix-branch
+ * [new branch]      main         -> origin/main
+ * [new branch]      new-features -> origin/new-features
+
+INFO:werkzeug:127.0.0.1 - - [15/Oct/2025 18:05:01] "POST /deploy HTTP/1.1" 200 -
