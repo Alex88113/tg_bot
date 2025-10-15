@@ -50,9 +50,9 @@ class PcCommandsBot(PcCommands):
         for partition in partitions:
             try:
                 usage = psutil.disk_usage(partition.mountpoint)
-                info_disk += f"""
-{partition.mountpoint} ({partition.fstype}\n
-{usage.total // (1024 ** 3)} gb\n
+                info_disk += f"""Раздел диска: {partition.mountpoint}
+Тип файловой системы: ({partition.fstype}\n
+Всего: {usage.total // (1024 ** 3)} gb\n
 "Использовано: {usage.used // (1024 ** 3)} gb ({usage.percent}%\n
 Свободно: {usage.free // (1024 ** 3)} gb\n"""
            
