@@ -10,4 +10,4 @@ jobs:
     steps:
     - name: Trigger deploy via webhook
       run: |
-        curl -X POST http://91.215.250.220:8000/deploy
+        curl -X POST http://91.215.250.220:8080/deploy
