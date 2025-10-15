@@ -148,3 +148,28 @@
 2025-10-15 18:54:27 | RESULT | Команда CommandHandler[callback=PcCommandsBot.time_start_system] - успешно добавлена!
 
 2025-10-15 18:54:27 | RESULT | Бот успешно запустился
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=CommandsMyBot.start] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=CommandsMyBot.help] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=CommandsMyBot.greeting] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=CommandsMyBot.info] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=CommandsMyBot.day_time] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=CommandsMyBot.author] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=PcCommandsBot.system_info] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=PcCommandsBot.processor_info] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=PcCommandsBot.disk] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=PcCommandsBot.users_system] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=PcCommandsBot.access_memory] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Команда CommandHandler[callback=PcCommandsBot.time_start_system] - успешно добавлена!
+
+2025-10-15 19:45:20 | RESULT | Бот успешно запустился
