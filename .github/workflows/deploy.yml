@@ -1,0 +1,13 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger deploy via webhook
+      run: |
+           curl -X POST https://elenor-stasimetric-beauteously.ngrok-free.dev/deploy
