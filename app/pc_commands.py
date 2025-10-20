@@ -45,20 +45,28 @@ class PcCommandsBot(PcCommands):
          await update.message.reply_text(f'Максимальная частота: {cpu_freq.max}')
          await update.message.reply_text('-' * 80)
     async def disk(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-    partitions = psutil.disk_partitions(all=False)
-    info_disk = '💾 Информация о дисках:\n\n'
-    for partition in partitions:
         try:
-            usage = psutil.disk_usage(partition.mountpoint)
-            info_disk = f"""📁 Раздел диска: {partition.mountpoint}
-Тип файловой системы: {partition.fstype}
-Всего: {usage.total // (1024 ** 3)} GB
-Использовано: {usage.used // (1024 ** 3)} GB ({usage.percent}%)
- Свободно: {usage.free // (1024 ** 3)} GB\n\n"""
-        except Exception as error:
-           return  f"❌ Ошибка: {error}\n\n"
-    await update.message.reply_text(info_disk)
-
+            partitions = psutil.disk_partitions()
+            info_disk = '💾 *Информация о дисках:*\n\n'
+        
+            for i, partition in enumerate(partitions, 1):
+                try:
+                    usage = psutil.disk_usage(partition.mountpoint)
+                
+                
+                    info_disk += f"""*📁 Раздел {i}: {partition.device}*
+├️ Точка монтирования: `{partition.mountpoint}`
+├️ Файловая система: `{partition.fstype}
+├️ Общий размер: `{usage.total // (1024 ** 3)} GB`
+├️ Использовано:  {usage.used // (1024 ** 3)} GB ({usage.percent}%)
+└️ Свободно: `u{usage.free // (1024 ** 3)} GB n\n"""
+                
+                except PermissionError:
+                    info_disk += f"*⚠️ Раздел {i}: {partition.device}* - Доступ запрещен\n\n"
+        except Exception as e:
+            info_disk += f"*❌ Раздел {i}: {partition.device}* - Ошибка: {str(e)}\n\n"
+        
+            await update.message.reply_text(info_disk, parse_mode='Markdown')
     async def users_system(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         users = psutil.users()
         for user in users:
