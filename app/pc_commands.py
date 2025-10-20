@@ -3,10 +3,14 @@ from telegram import Update
 from telegram.ext import ContextTypes
 import platform
 import psutil
+
 from abc import ABC, abstractmethod
 from datetime import datetime
 
 class PcCommands(ABC):
+    @abstractmethod
+    async def test(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        pass
     @abstractmethod
     async def system_info(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
@@ -17,16 +21,15 @@ class PcCommands(ABC):
     async def disk(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
     @abstractmethod
-    async def users_system(self, update, context):
-        pass
-    @abstractmethod
     async def access_memory(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        pass
-    @abstractmethod
-    async def time_start_system(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass
 
 class PcCommandsBot(PcCommands):
+    async def test(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Простая тестовая команда"""
+        print("✅ Команда /test вызвана")
+        await update.message.reply_text("✅ Бот работает! Команда /test выполнена.")
+
     async def system_info(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         system = platform.system()
         architecture = platform.architecture()
@@ -44,46 +47,25 @@ class PcCommandsBot(PcCommands):
          await update.message.reply_text(f'Минимальная частота: {cpu_freq.min}')
          await update.message.reply_text(f'Максимальная частота: {cpu_freq.max}')
          await update.message.reply_text('-' * 80)
+
+    
     async def disk(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        try:
-            partitions = psutil.disk_partitions()
-            info_disk = '💾 *Информация о дисках:*\n\n'
-        
-            for i, partition in enumerate(partitions, 1):
-                try:
-                    usage = psutil.disk_usage(partition.mountpoint)
-                
-                
-                    info_disk += f"""*📁 Раздел {i}: {partition.device}*
-├️ Точка монтирования: `{partition.mountpoint}`
-├️ Файловая система: `{partition.fstype}
-├️ Общий размер: `{usage.total // (1024 ** 3)} GB`
-├️ Использовано:  {usage.used // (1024 ** 3)} GB ({usage.percent}%)
-└️ Свободно: `u{usage.free // (1024 ** 3)} GB n\n"""
-                
-                except PermissionError:
-                    info_disk += f"*⚠️ Раздел {i}: {partition.device}* - Доступ запрещен\n\n"
-        except Exception as e:
-            info_disk += f"*❌ Раздел {i}: {partition.device}* - Ошибка: {str(e)}\n\n"
-        
-            await update.message.reply_text(info_disk, parse_mode='Markdown')
-    async def users_system(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        users = psutil.users()
-        for user in users:
-            await update.message.reply_text(f"Текущий пользователь системы: {user}")
+        info_about_disk = psutil.disk_partitions()
+        for data_disk in info_about_disk:
+            used = psutil.disk_usage('/')
+            all_data_disk = f"""\n
+Диск: {data_disk.device}\n
+Точка монтирования: {data_disk.mountpoint}\n
+Файловая система: {data_disk.fstype}\n
+Общий объём диска {data_disk.device}: {used.total / (1024 ** 3):.2f}\n"""
+            await update.message.reply_text(all_data_disk)
+
 
     async def access_memory(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         virtual_memory = psutil.virtual_memory()
-        all_info_memory = f"""
-        Всего ОЗУ: {virtual_memory.total / (1024 ** 3):.2f} gb
-Доступно: {virtual_memory.available / (1024 ** 3):.2f} gb
-Использовано: {virtual_memory.used / (1024 ** 3):.2f} gb
-Процент использования: {virtual_memory.percent}%
-Свободно: {virtual_memory.free / (1024 ** 3):.2f} gb"""
-        await update.message.reply_text(all_info_memory)
-
-    async def time_start_system(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        boot_time = psutil.boot_time()
-        await update.message.reply_text(f"Время загрузки системы: {datetime.fromtimestamp(boot_time)}")
-        uptime = datetime.now() - datetime.fromtimestamp(boot_time)
-        await update.message.reply_text(f"Аптайм: {uptime}")
+        used_memory = (virtual_memory.used / virtual_memory.total) * 100
+        all_data_memory = f"""
+Общий объём ОЗУ: {virtual_memory.total / (1024 ** 3):.2f}GB
+Свободно: {virtual_memory.available / (1024 ** 3):.2f}GB
+Используется: {used_memory:.2f}%"""
+        await update.message.reply_text(all_data_memory)
