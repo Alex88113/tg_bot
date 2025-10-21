@@ -51,9 +51,7 @@ def main():
         CommandHandler('system_info', pc_commands_bot.system_info),
         CommandHandler('processor_info', pc_commands_bot.processor_info),
         CommandHandler('disk', pc_commands_bot.disk),
-        CommandHandler('users_system', pc_commands_bot.users_system),
-        CommandHandler('access_memory', pc_commands_bot.access_memory),
-        CommandHandler('time_start_system', pc_commands_bot.time_start_system)
+        CommandHandler('access_memory', pc_commands_bot.access_memory)
     ]
 
     all_commands = list_commands + list_pc_commands
