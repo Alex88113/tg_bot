@@ -51,21 +51,24 @@ class PcCommandsBot(PcCommands):
     
     async def disk(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         info_about_disk = psutil.disk_partitions()
+        disks_all_data = []
         for data_disk in info_about_disk:
-            used = psutil.disk_usage('/')
+            used = psutil.disk_usage(data_disk.mountpoint)
             all_data_disk = f"""\n
 Диск: {data_disk.device}\n
 Точка монтирования: {data_disk.mountpoint}\n
 Файловая система: {data_disk.fstype}\n
-Общий объём диска {data_disk.device}: {used.total / (1024 ** 3):.2f}\n"""
-            await update.message.reply_text(all_data_disk)
-
+Общий объём диска {data_disk.device}: {used.total / (1024 ** 3):.2f}\n
+"""
+            disks_all_data.append(all_data_disk)
+        message = "".join(disks_all_data)
+        await update.message.reply_text(message)
 
     async def access_memory(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         virtual_memory = psutil.virtual_memory()
         used_memory = (virtual_memory.used / virtual_memory.total) * 100
         all_data_memory = f"""
-Общий объём ОЗУ: {virtual_memory.total / (1024 ** 3):.2f}GB
-Свободно: {virtual_memory.available / (1024 ** 3):.2f}GB
-Используется: {used_memory:.2f}%"""
+Общий объём ОЗУ: {virtual_memory.total / (1024 ** 3):.2f}GB\n
+Свободно: {virtual_memory.available / (1024 ** 3):.2f}GB\n
+Используется: {used_memory:.2f}%\n"""
         await update.message.reply_text(all_data_memory)
