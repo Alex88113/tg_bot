@@ -52,8 +52,14 @@ class PcCommandsBot(PcCommands):
     async def disk(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         info_about_disk = psutil.disk_partitions()
         disks_all_data = []
+        seen_devices = set()
+
         for data_disk in info_about_disk:
-            used = psutil.disk_usage(data_disk.mountpoint)
+            disk_key = f"{data_disk.device}--{data_disk.mountpoint}"
+            if disk_key in seen_devices:
+                continue
+            seen_devices.add(disk_key)
+            used = psutil.disk_usage(data_disk.mountpoint) 
             all_data_disk = f"""\n
 Диск: {data_disk.device}\n
 Точка монтирования: {data_disk.mountpoint}\n
@@ -61,7 +67,7 @@ class PcCommandsBot(PcCommands):
 Общий объём диска {data_disk.device}: {used.total / (1024 ** 3):.2f}\n
 """
             disks_all_data.append(all_data_disk)
-        message = "".join(disks_all_data)
+        message = "Информация о диска:\n "+ "".join(disks_all_data)
         await update.message.reply_text(message)
 
     async def access_memory(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
