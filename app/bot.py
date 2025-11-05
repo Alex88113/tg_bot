@@ -1,77 +1,67 @@
+from telegram.ext import CommandHandler, ApplicationBuilder, MessageHandler, filters, Application, ContextTypes
 from telegram import Update
-from telegram.ext import Application, ApplicationBuilder, CommandHandler, ContextTypes, filters, MessageHandler
-from commands import CommandsMyBot
-from dotenv import load_dotenv
 import os
-from loggers_commands import *
-from pc_commands import PcCommandsBot
+import asyncio
+from dotenv import load_dotenv
+from PcCommandsMonitoring.commands import *
+from PcCommandsMonitoring.pc_commands import *
+from PcCommandsMonitoring.loggers_commands import *
 
-
-# Загрузка переменных окружения
 load_dotenv()
 TOKEN_MY_BOT = os.getenv("TOKEN_MY_BOT")
 
 if not TOKEN_MY_BOT:
     raise ValueError("Токен бота не найден")
 
-
-
-async def unknown_team(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    command = update.message.text
-    await update.message.reply_text(f"Команда '{command}' не найдена")
-    error_logger.error(f'Пользователь ввел неизвестную команду: {command}')
-
-
-async def command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    try:
-        pass
-    except Exception as error:
-        error_logger.error(f'error in: {error}')
-        await update.message.reply_text("Произошла ошибка")
-
-
-def main():
+debug_logger.debug('Запуск точки входа')
+async def main():
     pc_commands_bot = PcCommandsBot()
     bot_commands = CommandsMyBot()
-    bot_app = Application.builder().token(TOKEN_MY_BOT).build()
+    application = ApplicationBuilder().token(TOKEN_MY_BOT).build()
 
-    print('Начало запуска скрипта')
-    debug_logger.debug('Начало запуска бота')
+    list_commands = {
+        'start': bot_commands.start,
+        'help': bot_commands.help,
+        'greeting': bot_commands.greeting,
+        'info': bot_commands.info,
+        'day_time': bot_commands.day_time,
+        'author': bot_commands.author
+    }
 
-    list_commands = [
-        CommandHandler('start', bot_commands.start),
-        CommandHandler('help', bot_commands.help),
-        CommandHandler('greeting', bot_commands.greeting),
-        CommandHandler('info', bot_commands.info),
-        CommandHandler('day_time', bot_commands.day_time),
-        CommandHandler('author', bot_commands.author)
-    ]
+    list_pc_commands = {
+        'processor': pc_commands_bot.processor_info,
+        'system_info': pc_commands_bot.system_info,
+        'disk': pc_commands_bot.disk,
+        'access_memory': pc_commands_bot.access_memory,
+        'network': pc_commands_bot.collecting_network_statistics
+    }
+    result = list_commands | list_pc_commands
+    debug_logger.debug('Производится регистрация команд')
+    await asyncio.sleep(1)
 
-    list_pc_commands = [
-        CommandHandler('system_info', pc_commands_bot.system_info),
-        CommandHandler('processor_info', pc_commands_bot.processor_info),
-        CommandHandler('disk', pc_commands_bot.disk),
-        CommandHandler('users_system', pc_commands_bot.users_system),
-        CommandHandler('access_memory', pc_commands_bot.access_memory),
-        CommandHandler('time_start_system', pc_commands_bot.time_start_system)
-    ]
+    print("Начало регистрации команд")
+    for name_command, command_function in result.items():
+        application.add_handler(CommandHandler(name_command, command_function))
+        result_logger.info(f'Зарегистрирована команда: {name_command}\n====================================================')
 
-    all_commands = list_commands + list_pc_commands
+    debug_logger.debug('Обработчик обычных и системных команд  добавлен')
+    print('Добавлен обработчик всех команд')
 
-    for command in all_commands:
-        try:
-            bot_app.add_handler(command)
-            result_logger.info(f'Команда {command} - успешно добавлена!\n')
-        except Exception as error:
-            error_logger.error(f"Ошибка с: {error}")
-            
-    debug_logger.debug('Добавлен обраточик неизвестных команд')
-    bot_app.add_handler(MessageHandler(filters.COMMAND, unknown_team))
-    print('Добавлен обработчик неизвестных команд')
-    debug_logger.debug('Бот запустился\n')
-    result_logger.info("Бот успешно запустился")
-    print('Ботяра запускается.....')
-    bot_app.run_polling()
+    try:
+        await application.initialize()
+        await application.start()
+        await application.updater.start_polling()
 
-if __name__ == "__main__":
-    main()
+        while True:
+            await asyncio.sleep(1)
+    except KeyboardInterrupt as error:
+        error_logger.error(f'Причина остановки бота: {error}')
+        print(f'Остановка бота... причина: {error}')
+    finally:
+        await application.updater.stop()
+        await application.stop()
+        await application.shutdown()
+
+if __name__ == '__main__':
+    print('Бот успешно запущен!')
+    asyncio.run(main())
