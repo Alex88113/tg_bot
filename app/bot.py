@@ -39,10 +39,19 @@ async def main():
     debug_logger.debug('Производится регистрация команд')
     await asyncio.sleep(1)
 
+
     print("Начало регистрации команд")
     for name_command, command_function in result.items():
         application.add_handler(CommandHandler(name_command, command_function))
         result_logger.info(f'Зарегистрирована команда: {name_command}\n====================================================')
+=======
+    list_pc_commands = [
+        CommandHandler('system_info', pc_commands_bot.system_info),
+        CommandHandler('processor_info', pc_commands_bot.processor_info),
+        CommandHandler('disk', pc_commands_bot.disk),
+        CommandHandler('access_memory', pc_commands_bot.access_memory)
+    ]
+
 
     debug_logger.debug('Обработчик обычных и системных команд  добавлен')
     print('Добавлен обработчик всех команд')
